@@ -3,53 +3,49 @@
     <!-- 轮播图 -->
     <div class="banner">
       <el-carousel indicator-position="outside" height="480px">
-        <el-carousel-item v-for="item in banner" :key="item.id">
-          <!-- <h3>{{ item }}</h3> -->
-          <img v-if="item.picUrl" class="img1" :src="item.picUrl" alt />
-          <img v-if="item.picUrl2" class="img2 a" :src="item.picUrl2" alt />
-          <img v-if="item.picUrl3" class="img3 b" :src="item.picUrl3" alt />
+        <el-carousel-item v-for="(item,i) in banner" :key="i">
+          <img v-if="item.picUrl" class="img1" :src="item.picUrl" alt>
+          <img v-if="item.picUrl2" class="img2 a" :src="item.picUrl2" alt>
+          <img v-if="item.picUrl3" class="img3 b" :src="item.picUrl3" alt>
         </el-carousel-item>
       </el-carousel>
     </div>
-    <div v-for="(item, index) in homeList" :key="index">
-      <div class="activity-panel"  v-if="item.type===1">
-        <!-- 仅展示活动版块 -->
+    <div v-for="(item,index) in homeList" :key="index">
+      <div class="activity-panel" v-if="item.type===1">
+        <!-- 仅仅要活动版块的内容 -->
         <el-row>
-          <el-col
-            class="content"
-            :span="8"
-            v-for="o in item.panelContents"
-            :key="o.id"
-          >
+          <el-col class="content" :span="8" v-for="o in item.panelContents" :key="o.id">
             <el-card :body-style="{ padding: '0px' }">
-              <img :src="o.picUrl" class="i" />
+              <img :src="o.picUrl" class="i">
               <a href="#" class="cover-link"></a>
             </el-card>
           </el-col>
         </el-row>
       </div>
       <!-- 商品title -->
-        <section class="w mt30 clearfix" v-if="item.type===2">
+      <section class="w mt30 clearfix" v-if="item.type===2">
         <m-shelf :title="item.name">
           <div slot="content" class="hot">
             <mall-goods v-for="(o,i) in item.panelContents" :key="i" :goods="o"></mall-goods>
           </div>
         </m-shelf>
       </section>
-      <section class="w mt30 clearfix"  v-if="item.type===3">
-        <!-- <m-shelf :title="item.name"> </m-shelf> -->
+      <section class="w mt30 clearfix" v-if="item.type===3">
         <m-shelf :title="item.name">
           <div slot="content" class="floors">
             <div
               class="imgbanner"
               v-for="(o,j) in item.panelContents"
               :key="j"
+              :v-if="o.type===2 || o.type===3"
             >
             <img :src="o.picUrl" alt="">
             </div>
-            <mall-goods :goods='o' v-for='(o,i) in item.panelContents' :key='i' ></mall-goods>
+            <mall-goods
+            :goods='o'
+            v-for='(o,i) in item.panelContents' :key="'info2'+i" :v-if='o.type===0'></mall-goods>
           </div>
-          </m-shelf>
+        </m-shelf>
       </section>
     </div>
   </div>
@@ -58,37 +54,34 @@
 <script>
 import MShelf from "@/components/Shelf";
 import MallGoods from "@/components/MallGoods";
-
+// 主要逻辑
 export default {
-  name: "homePage",
-  components: { 
-  MShelf,
-  MallGoods
-  },
   data() {
-
-   return {
+    return {
       banner: [],
-      homeList: [],
+      homeList: []
     };
+  },
+  components: {
+    MShelf,
+    MallGoods
   },
   async created() {
     try {
       const res = await this.$http.get("/api/goods/home");
-      console.log(res);
-      // console.log(res.data.result[0].name)
       let data = res.data;
+      console.log(data)
       if (data.code === 200) {
         let result = data.result;
         this.homeList = result;
         // 获取轮播图的数据
-        let item = result.find((item) => item.type === 0);
+        let item = result.find(item => item.type === 0);
         this.banner = item.panelContents;
       }
     } catch (error) {
       console.log(error.message);
     }
-  },
+  }
 };
 </script>
 

@@ -4,47 +4,29 @@
       <el-card :body-style="{padding: 0}">
         <div class="good-img">
           <a>
-           <img :src="goods.productImageBig" alt>
+            <img src="" alt>
           </a>
         </div>
-        <h6 class="good-title">{{goods.productName}}</h6>
-        <h3 class="sub-title ellipsis">{{goods.subTitle}}</h3>
+        <h6 class="good-title">商品标题</h6>
+        <h3 class="sub-title ellipsis">子标题</h3>
         <div class="good-price pr">
-           <div class="ds pa">
-            <a href='javascript:;'>
+          <div class="ds pa">
+            <a href>
               <el-button type="default" size="medium">查看详情</el-button>
             </a>
-            <a href="javascript:;">
-              <el-button
-                type="primary"
-                size="medium"
-              
-              >加入购物车</el-button>
+            <a href>
+              <el-button type="primary" size="medium">加入购物车</el-button>
             </a>
           </div>
           <p>
             <span style="font-size:14px">¥</span>
-             {{Number(goods.salePrice).toFixed(2)}}
+            20.00
           </p>
         </div>
       </el-card>
     </el-col>
   </el-row>
 </template>
-<script>
-import { mapState } from "vuex"
-
-export default {
-  props: ["goods"],
-  computed: {
-    ...mapState(["login"])
-  },
-  methods: {
-
-  }
-};
-</script>
-
 <style lang="scss" scoped>
 .good-img {
   display: flex;

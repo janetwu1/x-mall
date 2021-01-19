@@ -4,27 +4,27 @@
       <el-card :body-style="{padding: 0}">
         <div class="good-img">
           <a>
-           <img :src="goods.productImageBig" alt>
+            <img v-lazy="goods.productImageBig" alt>
           </a>
         </div>
         <h6 class="good-title">{{goods.productName}}</h6>
         <h3 class="sub-title ellipsis">{{goods.subTitle}}</h3>
         <div class="good-price pr">
-           <div class="ds pa">
+          <div class="ds pa">
             <a href='javascript:;'>
-              <el-button type="default" size="medium">查看详情</el-button>
+              <el-button type="default" size="medium" @click="productDetail(goods.productId)">查看详情</el-button>
             </a>
             <a href="javascript:;">
               <el-button
                 type="primary"
                 size="medium"
-              
+                @click="addCart(goods.productId,goods.salePrice,goods.productName,goods.productImageBig)"
               >加入购物车</el-button>
             </a>
           </div>
           <p>
             <span style="font-size:14px">¥</span>
-             {{Number(goods.salePrice).toFixed(2)}}
+            {{Number(goods.salePrice).toFixed(2)}}
           </p>
         </div>
       </el-card>
@@ -32,7 +32,13 @@
   </el-row>
 </template>
 <script>
-import { mapState } from "vuex"
+import { mapState,mapMutations } from "vuex"
+import { getStore } from "@/utils/storage"
+import Vue from 'vue'
+import VueLazyload  from 'vue-lazyload'
+
+Vue.use(VueLazyload)
+
 
 export default {
   props: ["goods"],
@@ -40,7 +46,42 @@ export default {
     ...mapState(["login"])
   },
   methods: {
+    ...mapMutations(['ADDCART']),
+    productDetail(id) {
+      // 编程式导航
+      this.$router.push({
+        name: 'goodsDetail',
+        query:{
+          productId:id
+        }
+      });
+    },
+    addCart(id, price, name, img) {
+      if (this.login) {
+        // 用户已登录
+        this.$http.post("/api/addCart", {
+          userId: getStore("id"),
+          productId:id,
+          productNum:1
+        });
+        // 已经存储到后端中， 将当前的商品存储到store的cartList
+        this.ADDCART({
+          productId:id,
+          salePrice:price,
+          productName:name,
+          productImageBig:img
+        })
 
+      }else{
+        // 如果用户未登录 也要将商品存储到store的cartList
+        this.ADDCART({
+          productId:id,
+          salePrice:price,
+          productName:name,
+          productImageBig:img
+        })
+      }
+    }
   }
 };
 </script>

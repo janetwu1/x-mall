@@ -5,6 +5,7 @@ import Login from  "@/views/Login"
 import Home from  "@/views/Home"
 import Goods from  "@/views/Goods"
 import Thanks from  "@/views/Thanks"
+// import GoodsDetail from "@/views/GoodsDetail/Index"
 
 Vue.use(VueRouter)
 
@@ -26,10 +27,19 @@ const routes=[
 
       },
       {
+        path: '/GoodsDetail',
+        name: 'GoodsDetail',
+        component: () => import(/* webpackChunkName: "GoodsDetail" */ '../views/GoodsDetail/index.vue')
+      },
+      {
         path:"thanks",
         component: Thanks
-
-      }
+      },
+      {
+        path: '/User',
+        name: 'User',
+        component: () => import(/* webpackChunkName: "User" */ '../views/User/index.vue')
+      },
     ]
   },
   {

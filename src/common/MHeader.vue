@@ -149,62 +149,62 @@
 </template>
 
 <script>
-// import { mapState, mapMutations } from "vuex";
-//  import { removeStore, getStore, setStore } from "../../utils/storage";
+import { mapState, mapMutations } from "vuex";
+ import { removeStore, getStore, setStore } from "../utils/storage";
 
-// export default {
-//   data() {
-//     return {
-//       productInfo: ""
-//     };
-//   },
-//   computed: {
-//     ...mapState(["login", "userInfo", "cartList", "showCart"]),
-//     totalNum() {
-//       return (
-//         this.cartList &&
-//         this.cartList.reduce((total, item) => {
-//           total += item.productNum;
-//           return total;
-//         }, 0)
-//       );
-//     },
-//     totalPrice(){
-//       return (
-//         this.cartList &&
-//         this.cartList.reduce((total, item) => {
-//           total += item.productNum * item.salePrice;
-//           return total;
-//         }, 0)
-//       );
-//     }
-//   },
-//   async mounted() {
-//     if (this.login) {
-//       const res = await this.$http.post("/api/cartList", { userId: getStore("id") });
-//       if (res.data.success === true) {
-//         setStore("buyCart", res.data.cartList.cartList);
-//         this.INITBUYCART();
-//       }
-//     } else {
-//       this.INITBUYCART();
-//     }
-//   },
-//   methods: {
-//     ...mapMutations(["SHOWCART", "INITBUYCART"]),
-//     cartShowState(state) {
-//       this.SHOWCART({
-//         showCart: state
-//       });
-//     },
-//     logout() {
-//       removeStore("token");
-//       removeStore("buyCart");
-//       window.location.href = "/";
-//     }
-//   },
-//   created() {}
-// };
+export default {
+  data() {
+    return {
+      productInfo: ""
+    };
+  },
+  computed: {
+    ...mapState(["login", "userInfo", "cartList", "showCart"]),
+    totalNum() {
+      return (
+        this.cartList &&
+        this.cartList.reduce((total, item) => {
+          total += item.productNum;
+          return total;
+        }, 0)
+      );
+    },
+    totalPrice(){
+      return (
+        this.cartList &&
+        this.cartList.reduce((total, item) => {
+          total += item.productNum * item.salePrice;
+          return total;
+        }, 0)
+      );
+    }
+  },
+  async mounted() {
+    if (this.login) {
+      const res = await this.$http.post("/api/cartList", { userId: getStore("id") });
+      if (res.data.success === true) {
+        setStore("buyCart", res.data.cartList.cartList);
+        this.INITBUYCART();
+      }
+    } else {
+      this.INITBUYCART();
+    }
+  },
+  methods: {
+    ...mapMutations(["SHOWCART", "INITBUYCART"]),
+    cartShowState(state) {
+      this.SHOWCART({
+        showCart: state
+      });
+    },
+    logout() {
+      removeStore("token");
+      removeStore("buyCart");
+      window.location.href = "/";
+    }
+  },
+  created() {}
+};
  </script>
 
 <style lang="scss" scoped>
