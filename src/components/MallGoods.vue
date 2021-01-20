@@ -4,11 +4,11 @@
       <el-card :body-style="{padding: 0}">
         <div class="good-img">
           <a>
-           <img :src="goods.productImageBig" alt>
-          </a>
+          <img v-lazy="goods.productImageBig">
+        </a>
         </div>
-        <h6 class="good-title">{{goods.productName}}</h6>
-        <h3 class="sub-title ellipsis">{{goods.subTitle}}</h3>
+        <h6 class="good-title">{{ goods.productName }}</h6>
+        <h3 class="sub-title ellipsis">{{ goods.subTitle }}</h3>
         <div class="good-price pr">
            <div class="ds pa">
             <a href='javascript:;'>
@@ -32,17 +32,53 @@
   </el-row>
 </template>
 <script>
-import { mapState } from "vuex"
+import { mapState, mapMutations } from "vuex"
+import { getStore } from "@/utils/storage"
 
 export default {
   props: ["goods"],
   computed: {
     ...mapState(["login"])
   },
-  methods: {
+   methods: {
+    ...mapMutations(['ADDCART']),
+    productDetail(id) {
+      // 编程式导航
+      this.$router.push({
+        name: 'goodsDetail',
+        query:{
+          productId:id
+        }
+      });
+    },
+    addCart(id, price, name, img) {
+      if (this.login) {
+        // 用户已登录
+        this.$http.post("/api/addCart", {
+          userId: getStore("id"),
+          productId:id,
+          productNum:1
+        });
+        // 已经存储到后端中， 将当前的商品存储到store的cartList
+        this.ADDCART({
+          productId:id,
+          salePrice:price,
+          productName:name,
+          productImageBig:img
+        })
 
+      }else{
+        // 如果用户未登录 也要将商品存储到store的cartList
+        this.ADDCART({
+          productId:id,
+          salePrice:price,
+          productName:name,
+          productImageBig:img
+        })
+      }
+    }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

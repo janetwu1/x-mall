@@ -2,35 +2,43 @@
   <div class="goods">
     <div class="nav">
       <div class="w">
-        <a href="javascript:;"
-        :class="{ active: i === isIndex}"
-        v-for="(navItem,i) in navList"
-        :key="i"
-        @click="handleSort">
-        {{ navItem.title }}
-        </a>
+        <a
+          @click="handleSort(i)"
+          :class="{active:i===isIndex}"
+          href="javascript:;"
+          v-for="(navItem,i) in navList"
+          :key="i"
+        >{{navItem.title}}</a>
         <div class="price-interval">
           <input type="number" class="input" placeholder="价格" v-model="min">
           <span style="margin: 0 5px">-</span>
           <input type="number" placeholder="价格" v-model="max">
-          <el-button type="primary" size="small" style="margin-left: 10px;">确定</el-button>
+          <el-button type="primary" size="small" style="margin-left: 10px;" @click="reset">确定</el-button>
         </div>
       </div>
     </div>
     <div>
       <div class="goods-box w">
-        <mall-goods></mall-goods>
+        <mall-goods v-for="goods in allGoods" :key="goods.id" :goods="goods"></mall-goods>
       </div>
       <div class="w">
-        分页
+        <el-pagination
+          style="float:right;"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page.sync="currentPage"
+          :page-sizes="[8, 20, 40, 80]"
+          :page-size="pageSize"
+          layout="total,sizes, prev, pager, next"
+          :total="total"
+        ></el-pagination>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import MallGoods from "@/components/MallGoods"
-
+import MallGoods from "@/components/MallGoods";
 export default {
   components: {
     MallGoods
@@ -40,43 +48,85 @@ export default {
       max: "",
       min: "",
       navList: [
-        { title: '综合排序' },
-        { title: '价格由高到低' },
-        { title: '价格由低到高' }
+        { title: "综合排序" },
+        { title: "价格由低到高" },
+        { title: "价格由高到低" }
       ],
       isIndex: 0,
       currentPage: 1,
       pageSize: 20,
-      sort: ''
-    }
+      sort: "",
+      total: 0,
+      allGoods: []
+    };
   },
-  created () {
-    this.getAllGoods()
+  watch: {
+    $route: "getAllGoods"
+  },
+  created() {
+    this.getAllGoods();
   },
   methods: {
-    async getAllGoods() {
-     const res = await this.$http.get(`/api/goods/allGoods?page=${this.currentPage}&size=${this.pageSize}&sort=${this.sort}&priceGt=${this.min}&priceLte=${this.max}`)
-     console.log(res)
+    handleSizeChange(val) {
+      this.pageSize = val;
+      this.getAllGoods();
     },
-    handleSort(i){
-      this.isIndex = i
+    handleCurrentChange(val) {
+      this.currentPage = val;
+      this.getAllGoods();
+    },
+    async getAllGoods() {
+     
+        const url = this.$route.query.cid ? `/api/goods/allGoods?page=${this.currentPage}&size=${
+            this.pageSize
+          }&sort=${this.sort}&priceGt=${this.min}&priceLte=${this.max}&cid=${this.$route.query.cid}`: `/api/goods/allGoods?page=${this.currentPage}&size=${
+            this.pageSize
+          }&sort=${this.sort}&priceGt=${this.min}&priceLte=${this.max}`
+          console.log(url)
+      try {
+         console.log(1)
+        const res = await this.$http.get(
+          url
+        )
+        this.allGoods = res.data.data;
+        this.total = res.data.total;
+        close.log(res)
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 排序
+    priceSort(v) {
+      this.sort = v;
+      this.getAllGoods();
+    },
+    reset() {
+      this.currentPage = 1;
+      this.sort = "";
+      this.getAllGoods();
+    },
+    handleSort(i) {
+      this.isIndex = i;
       switch (i) {
         case 0:
-          // 综合排序
-          break
+          //   综合排序
+          this.reset();
+          break;
         case 1:
-          // 正序
-          break  
+          this.priceSort(1);
+          //   正序
+          break;
         case 2:
-          // 倒序
-          break
+          this.priceSort(-1);
+          //   倒序
+          break;
+
         default:
-          // 综合排序
-          break
+          break;
       }
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
